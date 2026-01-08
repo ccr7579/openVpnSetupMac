@@ -1,62 +1,96 @@
-Step-by-Step Guide: Secure OpenVPN on macOS (Generic)
+# Secure OpenVPN on macOS — Quick Setup
 
-Step 1: Install Homebrew (if needed)
+## Overview
+A concise, step-by-step guide to install OpenVPN using Homebrew, create a secure credentials file, and run a helper script to connect to your VPN on macOS. The script reads your username and static password from a protected file (~/.openvpn-auth) and accepts a one-time password (OTP) as a command-line argument.
+
+## Prerequisites
+- macOS (Intel or Apple Silicon)
+- Homebrew installed (see install step if not already present)
+- An OpenVPN configuration file (.ovpn) from your VPN provider or administrator
+- A username, static password (no OTP) and OTP generator
+- The connect script (`connectVPN.sh`) saved to your home directory
+
+## Install Homebrew (if needed)
+Run the official installer and verify Homebrew is available:
+
+```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew --version
+```
 
-Step 2: Install OpenVPN
+## Install OpenVPN
+
+```bash
 brew install openvpn
+```
 
+Find the OpenVPN binary path (use this in the script if needed):
 
-Check OpenVPN path:
-
+```bash
 which openvpn
+```
 
+## Configuration file (.ovpn)
+Copy your .ovpn file to a convenient, secure location. Example:
 
-Use this path in OPENVPN_BIN in the script.
+```bash
+$HOME/vpnconfig.ovpn
+```
 
-Step 3: Place your OpenVPN config file
+## Create a credentials file (secure)
 
-Copy your .ovpn file somewhere convenient (e.g., $HOME/vpnconfig.ovpn)
+1. Create the file `~/.openvpn-auth` with two lines:
+   - Line 1: VPN username
+   - Line 2: Static password (the password only; do NOT include OTP)
 
-Update CONFIG_FILE in the script with this path.
+Example contents:
 
-Step 4: Create credentials file
-nano ~/.openvpn-auth
-
-Line 1 → VPN username
-
-Line 2 → Static password (without OTP)
-
-Example:
-
+```
 myusername
 mypassword
+```
 
+2. Set strict permissions so only your user can read it:
 
-Set file permissions:
-
+```bash
 chmod 600 ~/.openvpn-auth
+```
 
+## Save and make the connect script executable
 
-This ensures only your user can read/write the file.
+1. Save `connectVPN.sh` to your home directory (`~/connectVPN.sh`).
+2. Ensure the script is executable:
 
-Step 5: Save and make script executable
-
-Save the connectVPN.sh script to your home folder.
-
-Make it executable:
-
+```bash
 chmod +x ~/connectVPN.sh
+```
 
-Step 6: Connect to VPN
+## Usage (connect)
+
+Run the script and pass your OTP as the only argument. Example:
+
+```bash
 ~/connectVPN.sh 123456
+```
 
+Notes:
+- Replace `123456` with your current one-time password (OTP).
+- The script reads your username and static password from `~/.openvpn-auth` and combines them with the OTP you provide.
+- Temporary files created by the script are removed automatically after use.
+- You may be prompted for your macOS sudo password when the script needs elevated privileges.
 
-Replace 123456 with your OTP
+## Security recommendations
+- Use `chmod 600` on `~/.openvpn-auth` to prevent other users from reading your credentials.
+- Do not store OTPs in the credentials file — supply them at runtime.
+- Consider using a macOS keychain or a password manager for long-term credential storage.
+- Review the `connectVPN.sh` contents before running to ensure it matches your security policy.
 
-The script reads your username and static password from .openvpn-auth
+## Troubleshooting
+- If OpenVPN is not found, ensure Homebrew's bin path is on your `PATH` or update `OPENVPN_BIN` in the script with the output of `which openvpn`.
+- If the VPN does not connect, double-check the .ovpn file, credentials, and the OTP generator clock sync.
+- Check system logs (Console.app) or run OpenVPN in verbose mode for more details.
 
-Temporary file is automatically deleted after use
+## License & Attribution
+- This document is provided as-is; adjust and reuse as needed. The repository owner is responsible for the script and configuration.
 
-Only macOS sudo password and OTP are needed
+End of README update.
