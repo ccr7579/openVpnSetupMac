@@ -33,7 +33,7 @@ chmod 600 "$TMP_AUTH"
 echo -e "${USERNAME}\n${VPN_PASSWORD}" > "$TMP_AUTH"
 
 # Connect VPN
-echo "🔐 Starting OpenVPN securely..."
+echo "Starting OpenVPN securely..."
 echo "You will be prompted for macOS sudo password."
 echo ""
 
